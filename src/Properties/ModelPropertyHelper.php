@@ -37,6 +37,7 @@ class ModelPropertyHelper
         private SquashedMigrationHelper $squashedMigrationHelper,
         private ModelCastHelper $modelCastHelper,
         private MigrationCache $migrationCache,
+        private DatabaseExtractionHelper $databaseExtractionHelper,
     ) {
     }
 
@@ -229,14 +230,18 @@ class ModelPropertyHelper
     {
         $migrationFiles = $this->migrationHelper->getMigrationFiles();
         $schemaFiles    = $this->squashedMigrationHelper->getSchemaFiles();
+        $dbOverrideFiles = $this->databaseExtractionHelper->getSchemaFiles();
 
         $this->tables = $this->migrationCache->remember(
             $migrationFiles,
             $schemaFiles,
+            $dbOverrideFiles,
             function () {
                 // First try to create tables from squashed migrations, if there are any
                 // Then scan the normal migration files for further changes to tables.
                 $tables = $this->squashedMigrationHelper->initializeTables();
+
+                $tables = $this->databaseExtractionHelper->initializeTables($tables);
 
                 return $this->migrationHelper->initializeTables($tables);
             },

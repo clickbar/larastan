@@ -47,7 +47,7 @@ class MigrationCacheTest extends TestCase
         $schemaFiles    = [];
 
         $called = false;
-        $result = $this->cache->remember($migrationFiles, $schemaFiles, static function () use (&$called) {
+        $result = $this->cache->remember($migrationFiles, $schemaFiles, [], static function () use (&$called) {
             $called = true;
 
             return ['users' => new SchemaTable('users')];
@@ -64,13 +64,13 @@ class MigrationCacheTest extends TestCase
         $schemaFiles    = [];
 
         // First call
-        $this->cache->remember($migrationFiles, $schemaFiles, static function () {
+        $this->cache->remember($migrationFiles, $schemaFiles, [], static function () {
             return ['users' => new SchemaTable('users')];
         });
 
         // Second call
         $called = false;
-        $result = $this->cache->remember($migrationFiles, $schemaFiles, static function () use (&$called) {
+        $result = $this->cache->remember($migrationFiles, $schemaFiles, [], static function () use (&$called) {
             $called = true;
 
             return [];
@@ -87,7 +87,7 @@ class MigrationCacheTest extends TestCase
         $schemaFiles    = [];
 
         // First call
-        $this->cache->remember($migrationFiles, $schemaFiles, static function () {
+        $this->cache->remember($migrationFiles, $schemaFiles, [], static function () {
             return ['users' => new SchemaTable('users')];
         });
 
@@ -98,7 +98,7 @@ class MigrationCacheTest extends TestCase
 
         // Second call should execute callback
         $called = false;
-        $result = $this->cache->remember($migrationFiles, $schemaFiles, static function () use (&$called) {
+        $result = $this->cache->remember($migrationFiles, $schemaFiles, [], static function () use (&$called) {
             $called = true;
 
             return ['posts' => new SchemaTable('posts')];
@@ -115,13 +115,13 @@ class MigrationCacheTest extends TestCase
         $migrationFiles = [new SplFileInfo($this->createTempFile('mig1.php'))];
 
         // First call
-        $cache->remember($migrationFiles, [], static function () {
+        $cache->remember($migrationFiles, [], [], static function () {
             return ['users' => new SchemaTable('users')];
         });
 
         // Second call
         $called = false;
-        $cache->remember($migrationFiles, [], static function () use (&$called) {
+        $cache->remember($migrationFiles, [], [], static function () use (&$called) {
             $called = true;
 
             return ['users' => new SchemaTable('users')];
@@ -137,7 +137,7 @@ class MigrationCacheTest extends TestCase
         $schemaFiles    = [];
 
         // Generate cache for state 1
-        $this->cache->remember($migrationFiles, $schemaFiles, static function () {
+        $this->cache->remember($migrationFiles, $schemaFiles, [], static function () {
             return ['v1' => new SchemaTable('v1')];
         });
 
@@ -152,7 +152,7 @@ class MigrationCacheTest extends TestCase
         clearstatcache(true, $file1);
 
         // Generate cache for state 2
-        $this->cache->remember($migrationFiles, $schemaFiles, static function () {
+        $this->cache->remember($migrationFiles, $schemaFiles, [], static function () {
             return ['v2' => new SchemaTable('v2')];
         });
 

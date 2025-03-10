@@ -44,17 +44,18 @@ final class MigrationCache
     /**
      * @param SplFileInfo[]                          $migrationFiles
      * @param SplFileInfo[]                          $schemaFiles
+     * @param SplFileInfo[]                          $dbOverrideFiles
      * @param callable(): array<string, SchemaTable> $callback
      *
      * @return array<string, SchemaTable>
      */
-    public function remember(array $migrationFiles, array $schemaFiles, callable $callback): array
+    public function remember(array $migrationFiles, array $schemaFiles, array $dbOverrideFiles, callable $callback): array
     {
         if (! $this->enabled) {
             return $callback();
         }
 
-        $fingerprint = $this->generateFingerprint($migrationFiles, $schemaFiles);
+        $fingerprint = $this->generateFingerprint($migrationFiles, $schemaFiles, $dbOverrideFiles);
         $cachePath   = $this->getCachePath($fingerprint);
 
         $cached = file_exists($cachePath) ? $this->readFromCache($cachePath) : null;
@@ -119,12 +120,14 @@ final class MigrationCache
     /**
      * @param SplFileInfo[] $migrationFiles
      * @param SplFileInfo[] $schemaFiles
+     * @param SplFileInfo[] $dbOverrideFiles
      */
-    private function generateFingerprint(array $migrationFiles, array $schemaFiles): string
+    private function generateFingerprint(array $migrationFiles, array $schemaFiles, array $dbOverrideFiles): string
     {
         $metadata = array_merge(
             array_map(static fn (SplFileInfo $file): string => sprintf('M:%s:%d', $file->getPathname(), $file->getMTime()), $migrationFiles),
             array_map(static fn (SplFileInfo $file): string => sprintf('S:%s:%d', $file->getPathname(), $file->getMTime()), $schemaFiles),
+            array_map(static fn (SplFileInfo $file): string => sprintf('D:%s:%d', $file->getPathname(), $file->getMTime()), $dbOverrideFiles),
         );
 
         sort($metadata);

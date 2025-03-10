@@ -18,8 +18,10 @@ parameters:
     noUnnecessaryEnumerableToArrayCalls: false
     squashedMigrationsPath: []
     databaseMigrationsPath: []
+    databaseExtractionSchemaPath: []
     disableMigrationScan: false
     disableSchemaScan: false
+    enableDatabaseExtractionScan: false
     configDirectories: []
     viewDirectories: []
     translationDirectories: []
@@ -48,7 +50,9 @@ parametersSchema:
     viewDirectories: listOf(string())
     translationDirectories: listOf(string())
     squashedMigrationsPath: listOf(string())
+    databaseExtractionSchemaPath: listOf(string())
     disableSchemaScan: bool()
+    enableDatabaseExtractionScan: bool()
     checkModelProperties: bool()
     checkUnusedViews: bool()
     checkMissingTranslations: bool()
@@ -489,6 +493,12 @@ services:
         arguments:
             schemaPaths: %squashedMigrationsPath%
             disableSchemaScan: %disableSchemaScan%
+
+    -
+        class: Larastan\Larastan\Properties\DatabaseExtractionHelper
+        arguments:
+            schemaPaths: %databaseExtractionSchemaPath%
+            enableDatabaseExtractionScan: %enableDatabaseExtractionScan%
 
     -
         class: Larastan\Larastan\Properties\ModelCastHelper
