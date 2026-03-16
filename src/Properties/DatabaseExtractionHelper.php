@@ -29,7 +29,13 @@ final class DatabaseExtractionHelper
         /** @var SplFileInfo[] $schemaFiles */
         $schemaFiles = [];
 
-        foreach ($this->schemaPaths as $schemaPath) {
+        $schemaPaths = $this->schemaPaths;
+
+        if (empty($schemaPaths)) {
+            $schemaPaths = [database_path('schema.php')];
+        }
+
+        foreach ($schemaPaths as $schemaPath) {
             $absolutePath = $this->fileHelper->absolutizePath($schemaPath);
 
             if (! file_exists($absolutePath)) {
@@ -53,11 +59,6 @@ final class DatabaseExtractionHelper
     {
         if (! $this->enableDatabaseExtractionScan) {
             return $tables;
-        }
-
-        // Load the file from the
-        if (empty($this->schemaPaths)) {
-            $this->schemaPaths = [database_path('schema.php')];
         }
 
         $filesArray = $this->getSchemaFiles();
